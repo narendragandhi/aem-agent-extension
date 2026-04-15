@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AEM Agent</title>
+  <link rel="stylesheet" href="sidepanel.css">
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <div class="header-main">
+        <div class="logo">
+          <span class="logo-icon">🔷</span>
+          <span>AEM Agent</span>
+        </div>
+        <div class="system-stats">
+          <div class="health-score" id="healthScore" title="ADA/SEO Health Score">
+            <span class="score-value">--%</span>
+          </div>
+          <div class="connection-status" id="connectionStatus">
+            <span class="status-dot offline"></span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="page-context" id="pageContext">
+      <div class="context-main">
+        <div class="path-display" id="pagePath" title="Current Path">/content/...</div>
+        <div class="status-badges">
+          <span class="badge" id="template" title="Template">-</span>
+          <span class="badge" id="workflowStatus" title="Status">-</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="impact-analysis hidden" id="impactAnalysis">
+      <div class="impact-summary">
+        <div class="severity-badge" id="impactSeverity">Impact: Low</div>
+        <div class="impact-count"><span id="impactCount">0</span> paths</div>
+      </div>
+      <ul class="impact-list" id="impactList"></ul>
+    </div>
+
+    <nav class="tabs">
+      <button class="tab active" data-tab="tools">Actions</button>
+      <button class="tab" data-tab="chat">AI Agent</button>
+      <button class="tab" data-tab="activity">History</button>
+    </nav>
+
+    <main class="content">
+      <section class="tab-content active" id="tools">
+        <!-- Organized Action Grid -->
+        <div class="action-grid">
+          <div class="action-group">
+            <div class="group-label">📦 Content</div>
+            <div class="group-buttons">
+              <button class="tool-btn" id="btnConvertCF" title="Convert to CF">📄 Convert</button>
+              <button class="tool-btn" id="btnGhostwriter" title="Ghostwriter">✍ Ghostwriter</button>
+              <button class="tool-btn" id="btnProperties" title="Properties">⚙ Properties</button>
+            </div>
+          </div>
+
+          <div class="action-group">
+            <div class="group-label">🛠 Development</div>
+            <div class="group-buttons">
+              <button class="tool-btn" id="btnLogWhisperer" title="Sling Logs">📋 Logs</button>
+              <button class="tool-btn" id="btnQuery" title="JCR Query">🔍 Query</button>
+              <button class="tool-btn" id="btnGenerateTest" title="Test Gen">🧪 Test Gen</button>
+            </div>
+          </div>
+
+          <div class="action-group">
+            <div class="group-label">🛡 Governance</div>
+            <div class="group-buttons">
+              <button class="tool-btn" id="btnActivate" title="Publish">▶ Publish</button>
+              <button class="tool-btn" id="btnUnlock" title="Unlock">🔓 Unlock</button>
+              <button class="tool-btn" id="btnPermissions" title="Permissions">🛡 Auth Debug</button>
+            </div>
+          </div>
+
+          <div class="action-group">
+            <div class="group-label">♿ Audit</div>
+            <div class="group-buttons">
+              <button class="tool-btn" id="btnAccessibility" title="ADA Audit">♿ Accessibility</button>
+              <button class="tool-btn" id="btnDiff" title="Environment Diff">🔄 Diff Stage</button>
+              <button class="tool-btn" id="btnGraft" title="Content Graft">🌱 Graft Stage</button>
+              <button class="tool-btn" id="btnDevOps" title="Cloud Manager">☁ DevOps</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"><span>Environment Reference</span></div>
+        <div class="env-config">
+          <input type="url" id="aemAuthorUrl" placeholder="AEM Author URL (e.g. https://author-p12345-e67890.adobeaemcloud.com)" autocomplete="off" />
+          <input type="text" id="aemUsername" placeholder="AEM Username" autocomplete="username" />
+          <input type="password" id="aemPassword" placeholder="AEM Password" autocomplete="current-password" />
+          <input type="text" id="stageUrl" placeholder="Stage / Publish URL (for Diff &amp; Graft)" />
+          <button class="save-btn" id="saveEnvConfig">Save Settings</button>
+          <p style="font-size:10px;color:#666;margin-top:4px;">Credentials are stored locally in your browser only. Never transmitted externally.</p>
+        </div>
+
+        <div class="divider"><span>CXForge Tools</span></div>
+        <div class="tool-list" id="toolList">
+          <div class="loading">Connecting to CXForge...</div>
+        </div>
+      </section>
+
+      <section class="tab-content" id="chat">
+        <div class="chat-container">
+          <div class="chat-messages" id="chatMessages">
+            <div class="message system">
+              <p>I'm your AEM agent. How can I assist you with this page?</p>
+            </div>
+          </div>
+          <div class="chat-input">
+            <input type="text" id="chatInput" placeholder="Command Agent..." />
+            <button id="sendChat">Send</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="tab-content" id="activity">
+        <div class="activity-list" id="activityList">
+          <div class="empty-state">No recent activity</div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <a href="http://localhost:10004" target="_blank">CXForge Admin Console →</a>
+    </footer>
+  </div>
+
+  <script src="sidepanel.js"></script>
+</body>
+</html>

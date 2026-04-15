@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AEM Agent – Privacy Policy</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 720px; margin: 40px auto; padding: 0 24px; color: #333; line-height: 1.6; }
+    h1 { color: #d52b1e; }
+    h2 { margin-top: 32px; border-bottom: 1px solid #eee; padding-bottom: 8px; }
+    code { background: #f5f5f5; padding: 2px 6px; border-radius: 3px; font-size: 0.9em; }
+  </style>
+</head>
+<body>
+  <h1>AEM Agent – Privacy Policy</h1>
+  <p><strong>Effective Date:</strong> April 14, 2026</p>
+
+  <h2>1. Overview</h2>
+  <p>AEM Agent is a Chrome browser extension designed to assist Adobe Experience Manager (AEM) developers and architects. This policy describes what data the extension accesses, how it is used, and what is never collected.</p>
+
+  <h2>2. Data We Access</h2>
+  <ul>
+    <li><strong>Active tab URL and DOM</strong> — Read only when you are on an AEM author instance (<code>localhost:4502</code> or <code>localhost:4503</code>). Used to extract page context (path, template, workflow status) and run on-page audits.</li>
+    <li><strong>AEM credentials</strong> — Username and password you enter in the Settings panel. Stored exclusively in <code>chrome.storage.local</code> on your own device. Never transmitted to any third party or remote server.</li>
+    <li><strong>AEM server responses</strong> — API responses from your local AEM instance (JCR data, logs, MSM status). Processed in-browser only; never sent externally.</li>
+  </ul>
+
+  <h2>3. Data We Do NOT Collect</h2>
+  <ul>
+    <li>No analytics, telemetry, or usage tracking of any kind.</li>
+    <li>No data is sent to any remote server operated by the extension authors.</li>
+    <li>No personal information is stored beyond your local browser storage.</li>
+    <li>No browsing history outside of AEM author URLs is accessed.</li>
+  </ul>
+
+  <h2>4. Permissions Explained</h2>
+  <ul>
+    <li><code>activeTab</code> — Required to read the current AEM page context when you click the extension.</li>
+    <li><code>sidePanel</code> — Required to open the agent side panel in Chrome.</li>
+    <li><code>storage</code> — Required to persist your AEM credentials and settings locally on your device.</li>
+    <li><code>scripting</code> — Required to inject the bridge script into AEM pages to read page context from the MAIN world.</li>
+  </ul>
+
+  <h2>5. Third-Party Services</h2>
+  <p>AEM Agent communicates only with:</p>
+  <ul>
+    <li>Your local AEM author instance (<code>localhost:4502</code> / <code>localhost:4503</code>) — under your direct control.</li>
+    <li>CXForge running locally on <code>localhost:10004</code> — under your direct control.</li>
+    <li>The browser-native Gemini Nano AI model (<code>window.ai</code>) — runs entirely on-device; no data leaves your browser.</li>
+  </ul>
+  <p>No data is sent to Adobe, Google, or any other third party by this extension.</p>
+
+  <h2>6. Data Retention</h2>
+  <p>All data (credentials, settings) is stored in <code>chrome.storage.local</code> and remains on your device. You can clear it at any time via Chrome's extension storage settings or by uninstalling the extension.</p>
+
+  <h2>7. Contact</h2>
+  <p>For questions about this privacy policy, please open an issue on the project's GitHub repository.</p>
+</body>
+</html>

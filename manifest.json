@@ -1,0 +1,73 @@
+{
+  "manifest_version": 3,
+  "name": "AEM Agent",
+  "version": "1.0.0",
+  "description": "AI-powered Adobe Experience Manager developer assistant. Analyze logs, audit governance, manage content fragments, debug permissions, and run JCR diffs — all from your browser side panel.",
+  "permissions": [
+    "sidePanel",
+    "activeTab",
+    "storage",
+    "scripting"
+  ],
+  "host_permissions": [
+    "http://localhost:4502/*",
+    "http://localhost:4503/*",
+    "http://localhost:10004/*",
+    "https://*.adobeaemcloud.com/*",
+    "https://*.adobeaemcloud.net/*"
+  ],
+  "action": {
+    "default_popup": "src/popup/popup.html",
+    "default_icon": {
+      "16": "assets/icon16.png",
+      "32": "assets/icon32.png",
+      "48": "assets/icon48.png",
+      "128": "assets/icon128.png"
+    }
+  },
+  "side_panel": {
+    "default_path": "src/sidepanel/sidepanel.html",
+    "open_on_install": true
+  },
+  "background": {
+    "service_worker": "src/background/background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "http://localhost:4502/*",
+        "http://localhost:4503/*",
+        "https://localhost:4502/*",
+        "https://localhost:4503/*",
+        "https://*.adobeaemcloud.com/*",
+        "https://*.adobeaemcloud.net/*"
+      ],
+      "js": ["src/content/content.js"],
+      "run_at": "document_idle",
+      "world": "ISOLATED"
+    },
+    {
+      "matches": [
+        "http://localhost:4502/*",
+        "http://localhost:4503/*",
+        "https://localhost:4502/*",
+        "https://localhost:4503/*",
+        "https://*.adobeaemcloud.com/*",
+        "https://*.adobeaemcloud.net/*"
+      ],
+      "js": ["src/content/bridge.js"],
+      "run_at": "document_start",
+      "world": "MAIN"
+    }
+  ],
+  "icons": {
+    "16": "assets/icon16.png",
+    "32": "assets/icon32.png",
+    "48": "assets/icon48.png",
+    "128": "assets/icon128.png"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  }
+}

@@ -1,9 +1,10 @@
 # AEM Agent — AI-Powered AEM Developer Assistant
 
+[![CI](https://github.com/narendragandhi/aem-agent-extension/actions/workflows/ci.yml/badge.svg)](https://github.com/narendragandhi/aem-agent-extension/actions/workflows/ci.yml)
 [![Tests](https://img.shields.io/badge/tests-20%2F20%20passing-brightgreen)](./tests)
 [![Manifest](https://img.shields.io/badge/manifest-v3-blue)](./manifest.json)
 [![Version](https://img.shields.io/badge/version-1.0.0-orange)](./manifest.json)
-[![License](https://img.shields.io/badge/license-ISC-lightgrey)](./package.json)
+[![License](https://img.shields.io/badge/license-ISC-lightgrey)](./LICENSE)
 
 A Chrome extension that puts an AI development assistant directly inside Adobe Experience Manager. Analyze Sling logs, audit governance, create Content Fragments, diff environments, and debug permissions — without leaving the browser.
 
@@ -36,6 +37,14 @@ Reads the live page DOM, extracts H1 and body text, uses Gemini Nano (or simulat
 
 ### WebMCP Tool Registration
 Registers `execute_aem_api` and `get_page_dom` with `window.navigator.modelContext` so AI assistants with WebMCP support can interact with AEM from the browser.
+
+---
+
+## Demo
+
+![AEM Agent Extension running on WKND — the side panel overlays governance audit results, log analysis, and JCR diff directly over your AEM author page](./aem-wknd-test.png)
+
+> The extension loads on any AEM author page (`localhost:4502` or AEM as a Cloud Service). The side panel provides one-click access to Log Whisperer, Governance Audit, JCR Diff, Content Fragment creation, and Ghostwriter SEO — without leaving the browser.
 
 ---
 

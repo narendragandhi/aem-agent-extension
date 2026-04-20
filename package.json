@@ -9,7 +9,7 @@
   "scripts": {
     "test": "playwright test",
     "test:unit": "playwright test --grep-invert \"integration|AEM API|Sling|JCR|Content Fragment|Ghostwriter|Environment Diff\"",
-    "build": "zip -r aem-agent-extension.zip . --exclude='*.git*' --exclude='node_modules/*' --exclude='test-results/*' --exclude='*.zip'"
+    "build": "zip -r aem-agent-extension.zip . --exclude='*.git*' --exclude='node_modules/*' --exclude='test-results/*' --exclude='*.zip' --exclude='.playwright*' --exclude='coverage/*' --exclude='tests/*' --exclude='playwright.config.js' --exclude='package-lock.json'"
   },
   "keywords": [],
   "author": "",

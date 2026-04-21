@@ -10,7 +10,7 @@ const extensionPath = path.resolve(__dirname, '../');
 const AEM = 'http://localhost:4502';
 const AEM_USER = 'admin';
 const AEM_PASS = 'admin';
-const WKND_PAGE = '/content/wknd/us/en/magazine';
+const WKND_PAGE = '/content/wknd/us/en/about-us';
 
 function aemHeaders(csrfToken) {
   const headers = { 'Authorization': 'Basic ' + Buffer.from(`${AEM_USER}:${AEM_PASS}`).toString('base64') };

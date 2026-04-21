@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "chrome-devtools": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "chrome-devtools-mcp@latest",
+        "--chromeArg=--load-extension=/Users/sonamgandhi/narendra/docker-sandbox/aem-agent-extension",
+        "--chromeArg=--disable-extensions-except=/Users/sonamgandhi/narendra/docker-sandbox/aem-agent-extension",
+        "--ignore-default-chrome-arg=--disable-extensions",
+        "--viewport=1440x900",
+        "--no-usage-statistics"
+      ]
+    }
+  }
+}

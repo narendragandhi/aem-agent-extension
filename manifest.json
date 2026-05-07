@@ -6,6 +6,7 @@
   "permissions": [
     "sidePanel",
     "activeTab",
+    "tabs",
     "storage",
     "scripting"
   ],
@@ -26,8 +27,7 @@
     }
   },
   "side_panel": {
-    "default_path": "src/sidepanel/sidepanel.html",
-    "open_on_install": true
+    "default_path": "src/sidepanel/sidepanel.html"
   },
   "background": {
     "service_worker": "src/background/background.js",

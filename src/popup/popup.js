@@ -1,6 +1,13 @@
 (function() {
-  const CXFORGE_URL = 'http://localhost:10004';
   const AEM_AUTHOR_URL = 'http://localhost:4502';
+
+  async function getCxforgeUrl() {
+    return new Promise(resolve => {
+      chrome.storage.local.get(['cxforgeUrl'], result => {
+        resolve((result.cxforgeUrl || 'http://localhost:10004').replace(/\/$/, ''));
+      });
+    });
+  }
 
   async function init() {
     await loadPageContext();
@@ -55,8 +62,9 @@
       chrome.sidePanel.open();
     });
 
-    document.getElementById('openCxforge').addEventListener('click', () => {
-      chrome.tabs.create({ url: CXFORGE_URL });
+    document.getElementById('openCxforge').addEventListener('click', async () => {
+      const cxforgeUrl = await getCxforgeUrl();
+      chrome.tabs.create({ url: cxforgeUrl });
     });
 
     document.getElementById('refreshContext').addEventListener('click', async () => {
@@ -78,9 +86,9 @@
 
   async function checkConnections() {
     const status = document.getElementById('status');
-    
+    const cxforgeUrl = await getCxforgeUrl();
     try {
-      const res = await fetch(`${CXFORGE_URL}/actuator/health`, { 
+      const res = await fetch(`${cxforgeUrl}/actuator/health`, {
         method: 'GET',
         signal: AbortSignal.timeout(3000)
       });

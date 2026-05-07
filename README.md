@@ -1,7 +1,7 @@
 # AEM Agent — AI-Powered AEM Developer Assistant
 
 [![CI](https://github.com/narendragandhi/aem-agent-extension/actions/workflows/ci.yml/badge.svg)](https://github.com/narendragandhi/aem-agent-extension/actions/workflows/ci.yml)
-[![Tests](https://img.shields.io/badge/tests-20%2F20%20passing-brightgreen)](./tests)
+[![Tests](https://img.shields.io/badge/tests-passing-brightgreen)](./tests)
 [![Manifest](https://img.shields.io/badge/manifest-v3-blue)](./manifest.json)
 [![Version](https://img.shields.io/badge/version-1.0.0-orange)](./manifest.json)
 [![License](https://img.shields.io/badge/license-ISC-lightgrey)](./LICENSE)
@@ -34,6 +34,15 @@ Reads the live page DOM, extracts H1 and body text, uses Gemini Nano (or simulat
 - **Publish** — Activates via `/bin/replicate.json` with CSRF token
 - **Unlock** — Removes `cq:locked`/`cq:lockOwner` from `jcr:content`
 - **Permissions Debug** — Shows effective ACLs and inheritance trace
+
+### Test Generator
+Scans the live page DOM for components with `data-sling-resource-type` attributes and generates a ready-to-run Playwright test for the first discovered component. Output is displayed in the Chat tab.
+
+### Accessibility Audit
+Parses the live DOM for ADA/SEO issues: missing `alt` attributes on images, multiple `<h1>` tags, and excessive component nesting. Displays a score (0–100%) in the panel header. If Gemini Nano is available, generates a remediation plan automatically.
+
+### MSM Blast Radius
+Shows how many Live Copy pages will be affected when you modify the current blueprint page. Displays a severity badge (low / medium / high) and the list of downstream paths in the Panel header.
 
 ### WebMCP Tool Registration
 Registers `execute_aem_api` and `get_page_dom` with `window.navigator.modelContext` so AI assistants with WebMCP support can interact with AEM from the browser.
@@ -72,6 +81,7 @@ Open the side panel → **Actions** tab → **Environment Reference** section:
 | AEM Username | `admin` |
 | AEM Password | `••••••••` |
 | Stage / Publish URL | `https://publish-p12345-e67890.adobeaemcloud.com` |
+| CXForge URL | `http://localhost:10004` (default — change if running on a different port) |
 
 Credentials stored in `chrome.storage.local` — never transmitted outside your configured AEM hosts.
 
@@ -84,7 +94,7 @@ Credentials stored in `chrome.storage.local` — never transmitted outside your 
 | AEM 6.5 on `localhost:4502` | Fully supported |
 | AEM as a Cloud Service (`*.adobeaemcloud.com`) | Supported via browser session |
 | Gemini Nano AI features | Chrome Canary + `#prompt-api-for-gemini-nano` flag |
-| Cloud Manager integration | Requires Adobe I/O API key |
+| Cloud Manager integration | Shows demo data (real integration requires Adobe I/O API key) |
 
 ---
 
@@ -113,7 +123,7 @@ npx playwright test
 
 Requires a live AEM instance at `http://localhost:4502` with WKND content for integration tests.
 
-**20/20 tests passing** — 6 unit + 14 integration against live AEM SDK.
+Integration tests require a live AEM instance at `http://localhost:4502` with WKND content. Unit tests (`tests/unit-functions.test.js`) run without AEM and verify `diffJCR` and `calculateBlastRadius` logic in isolation.
 
 ---
 

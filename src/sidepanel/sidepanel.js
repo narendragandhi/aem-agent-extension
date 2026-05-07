@@ -1,9 +1,20 @@
 (function() {
-  const CXFORGE_URL = 'http://localhost:10004';
   let tools = [];
   let pageContext = {};
   let activities = [];
   let aiSession = null;
+
+  async function getCxforgeUrl() {
+    return new Promise(resolve => {
+      chrome.storage.local.get(['cxforgeUrl'], result => {
+        resolve((result.cxforgeUrl || 'http://localhost:10004').replace(/\/$/, ''));
+      });
+    });
+  }
+
+  function clickTab(name) {
+    document.querySelector(`.tab[data-tab="${name}"]`)?.click();
+  }
 
   function escapeHtml(text) {
     return String(text)
@@ -165,7 +176,8 @@
 
   async function loadTools() {
     try {
-      const response = await fetch(`${CXFORGE_URL}/api/tools`);
+      const cxforgeUrl = await getCxforgeUrl();
+      const response = await fetch(`${cxforgeUrl}/api/tools`);
       if (!response.ok) throw new Error('Failed to load tools');
       tools = await response.json();
       renderTools();
@@ -488,6 +500,7 @@ What would you like to do?`);
 
     // 2. Check DOM-based rules via MCP Tool
     chrome.runtime.sendMessage({ type: 'GET_DOM' }, (response) => {
+      if (chrome.runtime.lastError) return;
       if (response && response.dom) {
         const parser = new DOMParser();
         const doc = parser.parseFromString(response.dom, 'text/html');
@@ -531,13 +544,15 @@ What would you like to do?`);
     }
 
     // Load saved config
-    chrome.storage.local.get(['aemAuthorUrl', 'stageUrl', 'aemUsername'], (result) => {
+    chrome.storage.local.get(['aemAuthorUrl', 'stageUrl', 'aemUsername', 'cxforgeUrl'], (result) => {
       const authorInput = document.getElementById('aemAuthorUrl');
       if (result.aemAuthorUrl && authorInput) authorInput.value = result.aemAuthorUrl;
       const stageInput = document.getElementById('stageUrl');
       if (result.stageUrl && stageInput) stageInput.value = result.stageUrl;
       const userInput = document.getElementById('aemUsername');
       if (result.aemUsername && userInput) userInput.value = result.aemUsername;
+      const cxforgeInput = document.getElementById('cxforgeUrl');
+      if (result.cxforgeUrl && cxforgeInput) cxforgeInput.value = result.cxforgeUrl;
       // Password intentionally not pre-filled
     });
 
@@ -548,26 +563,31 @@ What would you like to do?`);
         const stageUrl = document.getElementById('stageUrl').value.trim();
         const aemUsername = document.getElementById('aemUsername').value.trim();
         const aemPassword = document.getElementById('aemPassword').value;
-        chrome.storage.local.set({ aemAuthorUrl, stageUrl, aemUsername, aemPassword }, () => {
-          addChatMessage('system', `✅ Settings saved.\n- Author: ${aemAuthorUrl || 'http://localhost:4502 (default)'}\n- Stage: ${stageUrl || '(none)'}`);
+        const cxforgeUrl = document.getElementById('cxforgeUrl')?.value.trim() || '';
+        chrome.storage.local.set({ aemAuthorUrl, stageUrl, aemUsername, aemPassword, ...(cxforgeUrl && { cxforgeUrl }) }, () => {
+          addChatMessage('system', `✅ Settings saved.\n- Author: ${aemAuthorUrl || 'http://localhost:4502 (default)'}\n- Stage: ${stageUrl || '(none)'}\n- CXForge: ${cxforgeUrl || 'http://localhost:10004 (default)'}`);
         });
       });
     }
 
   async function startGhostwriter() {
     addActivity('ghostwriter', 'running', 'Analyzing page content for SEO...');
-    document.querySelector('.tab[data-tab="chat"]').click();
+    clickTab('chat');
     addChatMessage('system', `🔍 **SEO Analysis for \`${pageContext.path}\`**\n\nI am analyzing the page DOM to suggest high-impact SEO metadata...`);
 
     try {
       // 1. Get DOM content for analysis
       chrome.runtime.sendMessage({ type: 'GET_DOM' }, async (response) => {
+        if (chrome.runtime.lastError) {
+          addActivity('ghostwriter', 'failed', chrome.runtime.lastError.message);
+          return;
+        }
         const dom = response?.dom || '';
         const parser = new DOMParser();
         const doc = parser.parseFromString(dom, 'text/html');
-        
+
         const h1 = doc.querySelector('h1')?.textContent || 'Untitled Section';
-        const mainText = doc.body.innerText.substring(0, 1000); // Sample first 1000 chars
+        const mainText = (doc.body?.innerText || '').substring(0, 1000);
 
         let suggestedTitle = '';
         let suggestedDesc = '';
@@ -606,7 +626,7 @@ What would you like to do?`);
         applyBtn.textContent = 'Apply to JCR';
         applyBtn.className = 'apply-btn-inline';
         applyBtn.onclick = () => applySEOMetadata(suggestedTitle, suggestedDesc);
-        msgEl.appendChild(applyBtn);
+        msgEl?.appendChild(applyBtn);
 
         addActivity('ghostwriter', 'completed', 'SEO suggestions generated');
       });
@@ -646,7 +666,7 @@ What would you like to do?`);
 
   async function runPermissionsDebug() {
     addActivity('security', 'running', 'Analyzing ACLs...');
-    document.querySelector('.tab[data-tab="chat"]').click();
+    clickTab('chat');
     addChatMessage('system', 'I am debugging effective permissions for the current path...');
 
     try {
@@ -678,7 +698,7 @@ What would you like to do?`);
 
   async function openDevOpsStatus() {
     addActivity('devops', 'running', 'Fetching Cloud Manager status...');
-    document.querySelector('.tab[data-tab="chat"]').click();
+    clickTab('chat');
     addChatMessage('system', 'I am fetching the latest status from Adobe Cloud Manager...');
 
     try {
@@ -718,7 +738,7 @@ What would you like to do?`);
 
   async function runAccessibilityAudit() {
     addActivity('ada-audit', 'running', 'Auditing DOM...');
-    document.querySelector('.tab[data-tab="chat"]').click();
+    clickTab('chat');
     addChatMessage('system', 'Performing accessibility audit of the current page DOM...');
 
     try {
@@ -771,7 +791,7 @@ What would you like to do?`);
 
   async function startTestGeneration() {
     addActivity('test-gen', 'running', 'Scanning components...');
-    document.querySelector('.tab[data-tab="chat"]').click();
+    clickTab('chat');
     addChatMessage('system', 'Scanning the live page DOM for AEM components...');
 
     try {
@@ -833,7 +853,7 @@ What would you like to do?`);
       
       if (result.logs && result.logs.length > 0) {
         addActivity('log-whisperer', 'completed', `Found ${result.logs.length} relevant entries`);
-        document.querySelector('.tab[data-tab="chat"]').click();
+        clickTab('chat');
         addChatMessage('system', `**Log Analysis for ${result.resourceType}**:\n\n${result.logs.join('\n')}`);
       } else {
         addActivity('log-whisperer', 'completed', 'No errors found in recent logs');
@@ -844,7 +864,7 @@ What would you like to do?`);
   }
 
   function openQueryTool() {
-    document.querySelector('.tab[data-tab="tools"]').click();
+    clickTab('tools');
     openToolForm('query-builder');
   }
 
@@ -856,7 +876,7 @@ What would you like to do?`);
         payload: { path: `${pageContext.path}.content.html` }
       });
 
-      document.querySelector('.tab[data-tab="chat"]').click();
+      clickTab('chat');
       addChatMessage('system', `**Content Fragment Suggestion**:\n\nBased on the page structure at \`${pageContext.path}\`, I've identified several content sections that can be converted to fragments.\n\nSuggested Model: **Generic Content**\n\nWould you like me to create a draft Content Fragment in \`/content/dam/fragments\`?`);
       
       addActivity('cf-convert', 'completed', 'Analysis complete. Waiting for user input in chat.');
@@ -916,7 +936,8 @@ What would you like to do?`);
   async function checkConnections() {
     const statusEl = document.getElementById('connectionStatus');
     try {
-      const res = await fetch(`${CXFORGE_URL}/actuator/health`, { method: 'GET' });
+      const cxforgeUrl = await getCxforgeUrl();
+      const res = await fetch(`${cxforgeUrl}/actuator/health`, { method: 'GET' });
       if (res.ok) {
         statusEl.innerHTML = '<span class="status-dot online"></span><span>CXForge Connected</span>';
       }
@@ -930,7 +951,7 @@ What would you like to do?`);
     if (data.pendingToolId) {
       const toolId = data.pendingToolId;
       await chrome.storage.local.remove('pendingToolId');
-      document.querySelector('.tab[data-tab="tools"]').click();
+      clickTab('tools');
       if (tools.length === 0) {
         let attempts = 0;
         const checkTools = setInterval(() => {
@@ -977,7 +998,7 @@ What would you like to do?`);
     }
 
     addActivity('graft', 'running', 'Porting content...');
-    document.querySelector('.tab[data-tab="chat"]').click();
+    clickTab('chat');
     addChatMessage('system', `🌱 Initiating Content Graft: \`${pageContext.path}\` → \`${stageUrl}\`...`);
 
     chrome.runtime.sendMessage({

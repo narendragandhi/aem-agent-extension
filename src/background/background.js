@@ -1,5 +1,3 @@
-const CXFORGE_URL = 'http://localhost:10004';
-
 async function getAemConfig() {
   return new Promise(resolve => {
     chrome.storage.local.get(['aemAuthorUrl', 'aemUsername', 'aemPassword'], result => {
@@ -60,10 +58,12 @@ function assertSafeAemUrl(url) {
   }
 }
 
-// Compatibility shim — keep getTargetCredentials for any callers not yet updated
-async function getTargetCredentials() {
-  const cfg = await getAemConfig();
-  return { username: cfg.username, password: cfg.password, configured: cfg.configured };
+async function getCxforgeUrl() {
+  return new Promise(resolve => {
+    chrome.storage.local.get(['cxforgeUrl'], result => {
+      resolve((result.cxforgeUrl || 'http://localhost:10004').replace(/\/$/, ''));
+    });
+  });
 }
 
 let currentTabContext = {};
@@ -144,11 +144,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       return true;
 
     case 'COMPARE_ENVIRONMENTS':
-      compareEnvironments(message.payload).then(sendResponse);
+      compareEnvironments(message.payload).then(sendResponse).catch(err => sendResponse({ error: err.message }));
       return true;
 
     case 'GRAFT_CONTENT':
-      handleGraftContent(message.payload).then(sendResponse);
+      handleGraftContent(message.payload).then(sendResponse).catch(err => sendResponse({ success: false, error: err.message }));
       return true;
 
     case 'GET_DOM':
@@ -226,7 +226,8 @@ async function handleGraftContent({ path, targetUrl }) {
 }
 
 async function runCxforgeTool({ toolId, params }) {
-  const response = await fetch(`${CXFORGE_URL}/api/jobs`, {
+  const cxforgeUrl = await getCxforgeUrl();
+  const response = await fetch(`${cxforgeUrl}/api/jobs`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -501,7 +502,8 @@ async function queryAemApi({ path, method = 'GET', body = null }) {
 }
 
 async function getToolDefinitions() {
-  const response = await fetch(`${CXFORGE_URL}/api/tools`);
+  const cxforgeUrl = await getCxforgeUrl();
+  const response = await fetch(`${cxforgeUrl}/api/tools`);
   
   if (!response.ok) {
     throw new Error(`CXForge error: ${response.status}`);
@@ -511,7 +513,8 @@ async function getToolDefinitions() {
 }
 
 async function executeJob({ jobId }) {
-  const response = await fetch(`${CXFORGE_URL}/api/jobs/${jobId}`);
+  const cxforgeUrl = await getCxforgeUrl();
+  const response = await fetch(`${cxforgeUrl}/api/jobs/${jobId}`);
   
   if (!response.ok) {
     throw new Error(`CXForge error: ${response.status}`);

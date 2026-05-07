@@ -4,3 +4,6 @@ test-results/
 .playwright-cli/
 *.png.bak
 aem-wknd-test.png
+.mcp.json
+aem-agent-extension.zip
+package-lock.json

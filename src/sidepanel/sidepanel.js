@@ -185,7 +185,7 @@
       document.getElementById('toolList').innerHTML = `
         <div class="empty-state">
           <p>Cannot connect to CXForge</p>
-          <p>Make sure CXForge is running on port 10004</p>
+          <p>Check the CXForge URL in Settings (Actions tab)</p>
         </div>
       `;
     }
@@ -472,7 +472,6 @@ What would you like to do?`);
     document.getElementById('btnReferences')?.addEventListener('click', () => showReferences());
     document.getElementById('btnDiff').addEventListener('click', () => performDiff());
     document.getElementById('btnGraft').addEventListener('click', () => performGraft());
-    document.getElementById('btnAccessibility').addEventListener('click', () => runAccessibilityAudit());
 
     // Governance Audit Polling — only runs when an AEM page is active
     setInterval(() => { if (pageContext.path) runGovernanceAudit(); }, 30000); // Every 30s, not 10s
@@ -921,16 +920,16 @@ What would you like to do?`);
 
   async function openProperties() {
     if (!pageContext.path) return;
-    chrome.tabs.create({ 
-      url: `http://localhost:4502/mnt/overlay/wcm/core/content/sites/properties.html?item=${pageContext.path}` 
-    });
+    const { aemAuthorUrl } = await chrome.storage.local.get(['aemAuthorUrl']);
+    const base = (aemAuthorUrl || 'http://localhost:4502').replace(/\/$/, '');
+    chrome.tabs.create({ url: `${base}/mnt/overlay/wcm/core/content/sites/properties.html?item=${pageContext.path}` });
   }
 
   async function showReferences() {
     if (!pageContext.path) return;
-    chrome.tabs.create({ 
-      url: `http://localhost:4502/sites.html/content/dam?checkReferences=${pageContext.path}` 
-    });
+    const { aemAuthorUrl } = await chrome.storage.local.get(['aemAuthorUrl']);
+    const base = (aemAuthorUrl || 'http://localhost:4502').replace(/\/$/, '');
+    chrome.tabs.create({ url: `${base}/sites.html/content/dam?checkReferences=${pageContext.path}` });
   }
 
   async function checkConnections() {
@@ -978,11 +977,15 @@ What would you like to do?`);
     addChatMessage('system', `Fetching cross-environment diff for ${path}...`);
 
     chrome.runtime.sendMessage({ type: 'COMPARE_ENVIRONMENTS', payload: { path, stageUrl } }, (response) => {
-      if (response.error) {
+      if (chrome.runtime.lastError) {
+        addChatMessage('system', `Diff Error: ${chrome.runtime.lastError.message}`);
+        return;
+      }
+      if (response?.error) {
         addChatMessage('system', `Diff Error: ${response.error}`);
         return;
       }
-      showDiffOverlay(response.diff || {});
+      showDiffOverlay(response?.diff || {});
     });
   }
 

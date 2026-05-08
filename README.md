@@ -51,7 +51,7 @@ Registers `execute_aem_api` and `get_page_dom` with `window.navigator.modelConte
 
 ## Demo
 
-![AEM Agent Extension running on WKND — the side panel overlays governance audit results, log analysis, and JCR diff directly over your AEM author page](./aem-wknd-test.png)
+![AEM Agent Extension running on WKND — the side panel overlays governance audit results, log analysis, and JCR diff directly over your AEM author page](./docs/screenshot.png)
 
 > The extension loads on any AEM author page (`localhost:4502` or AEM as a Cloud Service). The side panel provides one-click access to Log Whisperer, Governance Audit, JCR Diff, Content Fragment creation, and Ghostwriter SEO — without leaving the browser.
 

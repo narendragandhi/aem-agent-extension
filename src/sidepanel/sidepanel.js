@@ -72,22 +72,24 @@
 
         if (capabilities.available !== 'no') {
           aiSession = await window.ai.languageModel.create({
-            systemPrompt: `You are an AEM (Adobe Experience Manager) Expert Agent. 
-            Assistant to: Developer. Page: ${pageContext.path || 'unknown'}. 
+            systemPrompt: `You are an AEM (Adobe Experience Manager) Expert Agent.
+            Assistant to: Developer. Page: ${pageContext.path || 'unknown'}.
             Context: Standardized MCP tools (get_page_dom, execute_aem_api, analyze_aem_logs).`
           });
           loadingOverlay.remove();
-          addChatMessage('system', 'Native AI Agent Ready (MCP Standard).');
+          addChatMessage('system', 'Gemini Nano ready. All AI features are fully active.');
         } else {
-          loadingOverlay.innerHTML = '<span>Native AI Model not available. Enable Prompt API in flags.</span>';
+          loadingOverlay.remove();
+          addChatMessage('system', 'Gemini Nano is not available on this browser.\n\nAll tools (Log Whisperer, Governance Audit, JCR Diff, Content Graft, Test Generator, Accessibility Audit) work without AI. Ghostwriter SEO will generate rule-based suggestions instead of AI-written copy.\n\nTo enable Gemini Nano: use Chrome Canary and enable `chrome://flags/#prompt-api-for-gemini-nano`.');
         }
       } catch (e) {
         console.error('Native AI Init error:', e);
-        loadingOverlay.innerHTML = '<span>AI Initialization Failed. Check chrome://components</span>';
+        loadingOverlay.remove();
+        addChatMessage('system', `AI initialisation failed (${e.message}). All non-AI tools remain fully functional.`);
       }
     } else {
-      loadingOverlay.innerHTML = '<span>Browser Prompt API not detected. Fallback to Simulation Mode.</span>';
-      setTimeout(() => loadingOverlay.remove(), 2000);
+      loadingOverlay.remove();
+      addChatMessage('system', 'Running without Gemini Nano. All AEM tools are fully functional — Log Whisperer, Governance Audit, JCR Diff, Content Graft, Test Generator, and Accessibility Audit work without AI. Ghostwriter SEO uses rule-based suggestions.\n\nTo enable on-device AI: use Chrome Canary → `chrome://flags/#prompt-api-for-gemini-nano`.');
     }
   }
 
@@ -439,7 +441,9 @@
           if (result.error) {
             addChatMessage('system', `❌ Error creating fragment: ${result.error}`);
           } else {
-            addChatMessage('system', `✅ Content Fragment created successfully! [View in Assets](http://localhost:4502/assets.html/content/dam/fragments)`);
+            const { aemAuthorUrl } = await chrome.storage.local.get(['aemAuthorUrl']);
+            const base = (aemAuthorUrl || 'http://localhost:4502').replace(/\/$/, '');
+            addChatMessage('system', `✅ Content Fragment created successfully! [View in Assets](${base}/assets.html/content/dam/fragments)`);
           }
         } catch (e) {
           addChatMessage('system', `❌ Connection error: ${e.message}`);
@@ -996,24 +1000,50 @@ What would you like to do?`);
       return;
     }
 
-    if (!confirm(`Are you sure you want to GRAFT this page to ${stageUrl}? This will overwrite existing content.`)) {
-      return;
-    }
-
-    addActivity('graft', 'running', 'Porting content...');
+    // chrome.confirm() is blocked in extension pages — use inline chat confirmation instead
     clickTab('chat');
+    const confirmId = `confirm-${Date.now()}`;
+    addChatMessage('system', `⚠️ **Confirm Content Graft**\n\nThis will overwrite \`${stageUrl}${pageContext.path}\` with local content. This cannot be undone.`, confirmId);
+    const msgEl = document.getElementById(confirmId);
+    const confirmBtn = document.createElement('button');
+    confirmBtn.textContent = 'Yes, Graft';
+    confirmBtn.className = 'apply-btn-inline';
+    const cancelBtn = document.createElement('button');
+    cancelBtn.textContent = 'Cancel';
+    cancelBtn.className = 'apply-btn-inline';
+    cancelBtn.style.marginLeft = '8px';
+    cancelBtn.style.background = '#666';
+    confirmBtn.onclick = () => {
+      confirmBtn.remove();
+      cancelBtn.remove();
+      executeGraft(stageUrl);
+    };
+    cancelBtn.onclick = () => {
+      msgEl?.remove();
+    };
+    msgEl?.appendChild(confirmBtn);
+    msgEl?.appendChild(cancelBtn);
+  }
+
+  function executeGraft(stageUrl) {
+    addActivity('graft', 'running', 'Porting content...');
     addChatMessage('system', `🌱 Initiating Content Graft: \`${pageContext.path}\` → \`${stageUrl}\`...`);
 
     chrome.runtime.sendMessage({
       type: 'GRAFT_CONTENT',
       payload: { path: pageContext.path, targetUrl: stageUrl }
     }, (response) => {
+      if (chrome.runtime.lastError) {
+        addChatMessage('system', `❌ **Graft Failed**: ${chrome.runtime.lastError.message}`);
+        addActivity('graft', 'failed', chrome.runtime.lastError.message);
+        return;
+      }
       if (response && response.success) {
         addChatMessage('system', `✅ **Graft Successful**! Content ported to Stage.\n\n[View on Stage](${stageUrl}/editor.html${pageContext.path}.html)`);
         addActivity('graft', 'completed', 'Graft Successful');
       } else {
         addChatMessage('system', `❌ **Graft Failed**: ${response?.error || 'Unknown error'}`);
-        addActivity('graft', 'failed', response?.error);
+        addActivity('graft', 'failed', response?.error || 'Unknown error');
       }
     });
   }

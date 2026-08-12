@@ -37,11 +37,25 @@ environment, then wait for confirmation immediately before the action.
 
 ## WebMCP note
 
-The extension currently exposes lightweight page tools such as
-`get_page_dom` and `execute_aem_api`. Prefer the AEM WebMCP contract from
+The extension exposes two deliberately read-only page tools:
+`get_page_dom` and `execute_aem_api`. Both carry read-only metadata and the API
+tool accepts only relative `GET` paths. Prefer the AEM WebMCP contract from
 `aem-webmcp` when that clientlib is present; it provides stronger tool metadata
 and consent semantics. Do not use `execute_aem_api` as a general-purpose
 escape hatch.
+
+SLICC should use the extension as follows:
+
+| Responsibility | Owner |
+|---|---|
+| Natural-language planning and browser navigation | SLICC |
+| AEM page context and read-only inspection | Extension/WebMCP |
+| CSRF, host allowlists, credentials, and API calls | Extension background worker |
+| Confirmation immediately before publish, graft, unlock, or create | Extension side panel |
+
+SLICC may propose a write, but it must stop and ask for confirmation before
+invoking the corresponding side-panel action. The read-only WebMCP tools never
+perform mutations.
 
 ## Verification
 

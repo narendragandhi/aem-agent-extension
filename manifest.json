@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "AEM Agent",
   "version": "1.0.0",
-  "description": "AI-powered Adobe Experience Manager developer assistant. Analyze logs, audit governance, manage content fragments, debug permissions, and run JCR diffs — all from your browser side panel.",
+  "description": "Governed diagnostics and authoring assistance for Adobe Experience Manager pages, with audits, JCR inspection, and confirmation-gated actions in a browser side panel.",
   "permissions": [
     "sidePanel",
     "activeTab",

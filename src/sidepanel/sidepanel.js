@@ -94,9 +94,12 @@
   }
 
   function checkFirstRunCredentials() {
-    chrome.storage.local.get(['aemUsername', 'aemPassword', 'credentialsPrompted'], (result) => {
-      if (!result.aemUsername || !result.aemPassword) {
-        if (!result.credentialsPrompted) {
+    Promise.all([
+      new Promise(resolve => chrome.storage.local.get(['aemUsername', 'credentialsPrompted'], resolve)),
+      new Promise(resolve => chrome.storage.session.get(['aemPassword'], resolve))
+    ]).then(([local, session]) => {
+      if (!local.aemUsername || !session.aemPassword) {
+        if (!local.credentialsPrompted) {
           chrome.storage.local.set({ credentialsPrompted: true });
           // Scroll to settings and highlight them
           const envConfig = document.querySelector('.env-config');
@@ -469,7 +472,6 @@ What would you like to do?`);
     document.getElementById('btnConvertCF').addEventListener('click', () => startCFConversion());
     document.getElementById('btnGenerateTest').addEventListener('click', () => startTestGeneration());
     document.getElementById('btnAccessibility').addEventListener('click', () => runAccessibilityAudit());
-    document.getElementById('btnDevOps').addEventListener('click', () => openDevOpsStatus());
     document.getElementById('btnPermissions').addEventListener('click', () => runPermissionsDebug());
     document.getElementById('btnGhostwriter').addEventListener('click', () => startGhostwriter());
     document.getElementById('btnProperties').addEventListener('click', () => openProperties());
@@ -567,7 +569,12 @@ What would you like to do?`);
         const aemUsername = document.getElementById('aemUsername').value.trim();
         const aemPassword = document.getElementById('aemPassword').value;
         const cxforgeUrl = document.getElementById('cxforgeUrl')?.value.trim() || '';
-        chrome.storage.local.set({ aemAuthorUrl, stageUrl, aemUsername, aemPassword, ...(cxforgeUrl && { cxforgeUrl }) }, () => {
+        chrome.storage.local.set({ aemAuthorUrl, stageUrl, aemUsername, ...(cxforgeUrl && { cxforgeUrl }) }, async () => {
+          if (aemPassword) {
+            await chrome.storage.session.set({ aemPassword });
+          } else {
+            await chrome.storage.session.remove('aemPassword');
+          }
           addChatMessage('system', `✅ Settings saved.\n- Author: ${aemAuthorUrl || 'http://localhost:4502 (default)'}\n- Stage: ${stageUrl || '(none)'}\n- CXForge: ${cxforgeUrl || 'http://localhost:10004 (default)'}`);
         });
       });

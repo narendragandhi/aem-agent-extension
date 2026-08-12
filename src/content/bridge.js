@@ -56,7 +56,12 @@
         type: 'object',
         properties: {
           selector: { type: 'string', description: 'CSS selector to narrow down the DOM extraction' }
-        }
+        },
+        additionalProperties: false
+      },
+      annotations: {
+        readOnlyHint: true,
+        openWorldHint: false
       },
       execute: (args) => {
         if (args?.selector) {
@@ -68,21 +73,32 @@
 
     window.navigator.modelContext.registerTool('execute_aem_api', {
       name: 'execute_aem_api',
-      description: 'Executes a direct AEM API call (GET/POST) via the authenticated browser session',
+      description: 'Reads an AEM API resource (GET only) via the authenticated browser session',
       inputSchema: {
         type: 'object',
         properties: {
           path: { type: 'string', description: 'The JCR path or API endpoint' },
-          method: { type: 'string', enum: ['GET', 'POST'], default: 'GET' }
+          method: { type: 'string', enum: ['GET'], default: 'GET' }
         },
-        required: ['path']
+        required: ['path'],
+        additionalProperties: false
+      },
+      annotations: {
+        readOnlyHint: true,
+        openWorldHint: false
       },
       execute: async (args) => {
+        // SLICC-facing page tools are intentionally read-only. Mutations must
+        // use explicit side-panel actions, which apply CSRF and confirmation.
+        if (args?.method && args.method !== 'GET') {
+          throw new Error('execute_aem_api: only GET is available through the read-only browser tool');
+        }
         // Security: only relative JCR paths allowed — blocks BSRF to external URLs
         if (!args.path || !args.path.startsWith('/')) {
           throw new Error('execute_aem_api: path must be a relative JCR path starting with /');
         }
-        const res = await fetch(args.path, { method: args.method || 'GET', credentials: 'include' });
+        const res = await fetch(args.path, { method: 'GET', credentials: 'include' });
+        if (!res.ok) throw new Error(`execute_aem_api: request failed with status ${res.status}`);
         return await res.json();
       }
     });

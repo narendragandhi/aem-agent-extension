@@ -41,6 +41,9 @@ jobs:
             [ -f "$f" ] && node --check "$f" && echo "OK: $f"
           done
 
+      - name: Validate Chrome Web Store package contract
+        run: npm run validate:store
+
       - name: Install Playwright
         run: npx playwright install chromium --with-deps
 

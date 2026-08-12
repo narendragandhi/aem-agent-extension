@@ -1,16 +1,25 @@
 import { diffJCR, calculateBlastRadius } from './diff-utils.mjs';
 
 async function getAemConfig() {
-  return new Promise(resolve => {
-    chrome.storage.local.get(['aemAuthorUrl', 'aemUsername', 'aemPassword'], result => {
-      resolve({
-        authorUrl: (result.aemAuthorUrl || 'http://localhost:4502').replace(/\/$/, ''),
-        username: result.aemUsername || '',
-        password: result.aemPassword || '',
-        configured: !!(result.aemUsername && result.aemPassword)
-      });
-    });
-  });
+  const [local, session] = await Promise.all([
+    new Promise(resolve => chrome.storage.local.get(['aemAuthorUrl', 'aemUsername', 'aemPassword'], resolve)),
+    new Promise(resolve => chrome.storage.session.get(['aemPassword'], resolve))
+  ]);
+
+  // Migrate versions that persisted the password, then remove the durable copy.
+  let password = session.aemPassword || '';
+  if (!password && local.aemPassword) {
+    password = local.aemPassword;
+    await chrome.storage.session.set({ aemPassword: password });
+    await chrome.storage.local.remove('aemPassword');
+  }
+
+  return {
+    authorUrl: (local.aemAuthorUrl || 'http://localhost:4502').replace(/\/$/, ''),
+    username: local.aemUsername || '',
+    password,
+    configured: !!(local.aemUsername && password)
+  };
 }
 
 // CSRF token cache (AEM tokens expire after ~30 min; refresh every 10 min to be safe)
@@ -72,6 +81,10 @@ let currentTabContext = {};
 let webmcReady = false;
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  // Only extension-owned pages and our own content scripts may invoke
+  // privileged AEM/CXForge operations. Ignore messages from other extensions.
+  if (sender.id !== chrome.runtime.id) return false;
+
   switch (message.type) {
     case 'AEM_PAGE_CONTEXT':
       currentTabContext = message.payload;
@@ -696,4 +709,3 @@ async function compareEnvironments({ path, stageUrl }) {
     return { error: e.message };
   }
 }
-

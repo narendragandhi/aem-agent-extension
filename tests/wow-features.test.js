@@ -46,6 +46,37 @@ test.describe('AEM Agent "Wow" Features', () => {
     expect(tools).toContain('get_page_dom');
   });
 
+  test('WebMCP AEM API tool rejects writes and external URLs', async () => {
+    await page.addInitScript(() => {
+      window.registeredTools = {};
+      window.navigator.modelContext = {
+        registerTool: (name, def) => {
+          window.registeredTools[name] = def;
+        }
+      };
+    });
+
+    await page.goto('https://example.com');
+    await page.addScriptTag({ path: path.join(extensionPath, 'src/content/bridge.js') });
+
+    const result = await page.evaluate(async () => {
+      const tool = window.registeredTools.execute_aem_api;
+      const errors = [];
+      for (const args of [{ path: '/content/test', method: 'POST' }, { path: 'https://evil.example' }]) {
+        try {
+          await tool.execute(args);
+        } catch (error) {
+          errors.push(error.message);
+        }
+      }
+      return { errors, annotations: tool.annotations };
+    });
+
+    expect(result.errors[0]).toContain('only GET');
+    expect(result.errors[1]).toContain('relative JCR path');
+    expect(result.annotations.readOnlyHint).toBe(true);
+  });
+
   test('Log Whisperer should trigger correlation', async () => {
     const sidePanelPage = await browserContext.newPage();
     const extensionId = await getExtensionId(browserContext);

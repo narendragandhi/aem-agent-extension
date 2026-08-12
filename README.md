@@ -6,7 +6,10 @@
 [![Version](https://img.shields.io/badge/version-1.0.0-orange)](./manifest.json)
 [![License](https://img.shields.io/badge/license-ISC-lightgrey)](./LICENSE)
 
-A Chrome extension that puts an AI development assistant directly inside Adobe Experience Manager. Analyze Sling logs, audit governance, create Content Fragments, diff environments, and debug permissions — without leaving the browser.
+A Chrome extension that provides governed diagnostics and authoring assistance
+directly inside Adobe Experience Manager. Inspect page structure, audit
+governance, review environment differences, and perform confirmation-gated
+authoring actions without leaving the browser.
 
 ---
 
@@ -45,7 +48,10 @@ Parses the live DOM for ADA/SEO issues: missing `alt` attributes on images, mult
 Shows how many Live Copy pages will be affected when you modify the current blueprint page. Displays a severity badge (low / medium / high) and the list of downstream paths in the Panel header.
 
 ### WebMCP Tool Registration
-Registers `execute_aem_api` and `get_page_dom` with `window.navigator.modelContext` so AI assistants with WebMCP support can interact with AEM from the browser.
+Registers read-only `execute_aem_api` and `get_page_dom` tools with
+`window.navigator.modelContext` so SLICC and other WebMCP-capable assistants
+can inspect AEM from the browser. Mutations remain explicit side-panel actions
+with host validation, CSRF handling, and user confirmation.
 
 ---
 
@@ -83,7 +89,10 @@ Open the side panel → **Actions** tab → **Environment Reference** section:
 | Stage / Publish URL | `https://publish-p12345-e67890.adobeaemcloud.com` |
 | CXForge URL | `http://localhost:10004` (default — change if running on a different port) |
 
-Credentials stored in `chrome.storage.local` — never transmitted outside your configured AEM hosts.
+The author URL, stage URL, and username are stored in `chrome.storage.local`.
+The password is held only in `chrome.storage.session` and is cleared when the
+browser session ends. Credentials are sent only to the configured AEM host
+when an authenticated action is explicitly requested.
 
 ---
 
@@ -94,7 +103,7 @@ Credentials stored in `chrome.storage.local` — never transmitted outside your 
 | AEM 6.5 on `localhost:4502` | Fully supported |
 | AEM as a Cloud Service (`*.adobeaemcloud.com`) | Supported via browser session |
 | Gemini Nano AI features | Chrome Canary + `#prompt-api-for-gemini-nano` flag |
-| Cloud Manager integration | Shows demo data (real integration requires Adobe I/O API key) |
+| Cloud Manager integration | Not included in the current store build |
 
 ---
 
@@ -154,7 +163,7 @@ aem-agent-extension/
 ## Roadmap
 
 - [ ] IMS / OAuth 2.0 for AEM as a Cloud Service
-- [ ] Real Adobe I/O Cloud Manager integration
+- [ ] Real Adobe I/O Cloud Manager integration (not exposed in the store build)
 - [ ] Bulk page operations (bulk activate, bulk diff)
 - [ ] Component-level JCR diff
 

@@ -115,6 +115,8 @@ Audited against OWASP and Snyk guidelines:
 
 ## Running Tests
 
+See [SLICC Integration](docs/SLICC-INTEGRATION.md) for the browser-operator example.
+
 ```bash
 npm install
 npx playwright install chromium

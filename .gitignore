@@ -7,3 +7,4 @@ aem-wknd-test.png
 .mcp.json
 aem-agent-extension.zip
 package-lock.json
+.DS_Store

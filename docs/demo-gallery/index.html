@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AEM Agent — Product Walkthrough &amp; Gallery</title>
+<meta name="description" content="Guided walkthrough of AEM Agent, a governed diagnostics and authoring extension for Adobe Experience Manager.">
+<style>
+  :root {
+    --brand: #d52b1e;
+    --brand-dark: #9e1b1e;
+    --ink: #141414;
+    --panel: #f8f9fa;
+    --muted: #6a6a6a;
+    --line: #ececec;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: #222;
+    background: #fff;
+    line-height: 1.5;
+  }
+  a { color: var(--brand); text-decoration: none; }
+
+  /* Hero */
+  .hero {
+    background:
+      radial-gradient(900px 480px at 12% -20%, rgba(213,43,30,.22), transparent 60%),
+      radial-gradient(700px 420px at 105% 0%, rgba(158,27,30,.16), transparent 55%),
+      var(--ink);
+    color: #fff;
+    padding: 72px 28px 56px;
+    text-align: center;
+  }
+  .hero .mark {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 72px; height: 72px; border-radius: 18px;
+    background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+    box-shadow: 0 16px 40px -12px rgba(213,43,30,.6);
+    margin-bottom: 22px;
+  }
+  .hero .mark svg { width: 42px; height: 42px; }
+  .hero h1 { font-size: clamp(30px, 5vw, 52px); letter-spacing: -0.5px; }
+  .hero p.tag { margin-top: 12px; color: #cfcfcf; font-size: clamp(15px, 2.4vw, 19px); max-width: 720px; margin-inline: auto; }
+  .hero .chips { margin-top: 26px; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+  .hero .chip { font-size: 13px; font-weight: 600; padding: 8px 14px; border-radius: 999px; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.16); color: #e6e6e6; }
+  .hero .chip.brand { background: var(--brand); border-color: var(--brand); color: #fff; }
+
+  /* Video section */
+  .video-wrap { padding: 48px 20px 0; max-width: 1080px; margin-inline: auto; }
+  .video-wrap .cap { text-align: center; color: var(--muted); font-size: 13px; margin-top: 12px; }
+  video { width: 100%; border-radius: 16px; border: 1px solid var(--line); box-shadow: 0 24px 60px -24px rgba(0,0,0,.35); background: #000; }
+
+  /* Section headers */
+  .sec { max-width: 1080px; margin-inline: auto; padding: 64px 20px 0; }
+  .sec h2 { font-size: clamp(22px, 3.2vw, 30px); letter-spacing: -0.3px; display: flex; align-items: center; gap: 12px; }
+  .sec h2::before { content: ""; width: 8px; height: 26px; border-radius: 4px; background: linear-gradient(var(--brand), var(--brand-dark)); display: inline-block; }
+  .sec .lede { color: var(--muted); margin-top: 8px; font-size: 15px; max-width: 720px; }
+
+  /* Feature grid */
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 18px; margin-top: 28px; }
+  .card {
+    border: 1px solid var(--line); border-radius: 14px; padding: 20px; background: var(--panel);
+    transition: transform .18s ease, box-shadow .18s ease;
+  }
+  .card:hover { transform: translateY(-3px); box-shadow: 0 18px 40px -20px rgba(20,20,20,.25); }
+  .card .ico { font-size: 22px; }
+  .card h3 { font-size: 16px; margin: 8px 0 6px; }
+  .card p { font-size: 13.5px; color: var(--muted); }
+  .card .tag { display: inline-block; margin-top: 12px; font-size: 11px; font-weight: 700; letter-spacing: .5px; color: var(--brand); text-transform: uppercase; }
+
+  /* Screenshots */
+  .shots { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-top: 28px; }
+  .shot { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: #fff; }
+  .shot img { width: 100%; display: block; }
+  .shot figcaption { font-size: 12px; color: var(--muted); padding: 10px 12px; border-top: 1px solid var(--line); }
+  .note { font-size: 12px; color: var(--muted); margin-top: 10px; }
+
+  /* Security strip */
+  .strip { background: var(--ink); color: #d9d9d9; margin-top: 64px; }
+  .strip-inner { max-width: 1080px; margin-inline: auto; padding: 44px 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 18px; }
+  .strip .it h4 { color: #fff; font-size: 14px; margin-bottom: 6px; }
+  .strip .it p { font-size: 13px; color: #9a9a9a; }
+
+  footer { text-align: center; padding: 34px 20px; color: var(--muted); font-size: 13px; border-top: 1px solid var(--line); }
+  footer a { font-weight: 600; }
+  .pill { display:inline-block; border:1px solid var(--line); border-radius:999px; padding:3px 10px; font-size:12px; color:var(--muted); margin-left:4px; }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="mark" aria-hidden="true">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect x="28" y="28" width="72" height="72" fill="none" stroke="#fff" stroke-width="12"/><path d="M64 40 L64 88 M40 64 L88 64" stroke="#fff" stroke-width="12" stroke-linecap="round"/></svg>
+  </div>
+  <h1>AEM Agent</h1>
+  <p class="tag">Governed diagnostics &amp; authoring assistance for Adobe Experience Manager — audits, JCR inspection, AI-guided fixes and confirmation-gated actions in a Chrome side panel.</p>
+  <div class="chips">
+    <span class="chip brand">Manifest v3</span>
+    <span class="chip">Open source · ISC</span>
+    <span class="chip">AEM 6.5 + AEMaaCS</span>
+    <span class="chip">14 tests passing</span>
+  </div>
+</header>
+
+<main>
+<section class="video-wrap">
+  <video controls preload="metadata" poster="poster.jpg">
+    <source src="demo.mp4" type="video/mp4">
+    Your browser does not support HTML5 video.
+  </video>
+  <p class="cap">Synthetic walkthrough · recreates the real extension UI · narrator + captions · 1:06</p>
+</section>
+
+<section class="sec" id="features">
+  <h2>What it does</h2>
+  <p class="lede">Ten capabilities, all wired to real AEM APIs — and nothing runs unless you explicitly trigger it.</p>
+  <div class="grid">
+    <div class="card"><div class="ico">📊</div><h3>Governance Audit</h3><p>Auto-runs on every author page. Checks alt text (ADA), component nesting depth, and SEO metadata, then shows a live health score in the header.</p><span class="tag">0–100% score</span></div>
+    <div class="card"><div class="ico">📋</div><h3>Log Whisperer</h3><p>Live Sling error logs filtered to high-signal entries. With Gemini Nano, correlates errors to components automatically.</p><span class="tag">AI correlation</span></div>
+    <div class="card"><div class="ico">🔄</div><h3>JCR Environment Diff</h3><p>Recursive diff of <code>{page}.infinity.json</code> against your stage URL — added, removed, and changed properties highlighted.</p><span class="tag">3-level deep</span></div>
+    <div class="card"><div class="ico">🌱</div><h3>Content Grafting</h3><p>After diffing, graft the page JCR content to the target environment via Sling POST — confirmation gated, credentials optional.</p><span class="tag">confirmation-gated</span></div>
+    <div class="card"><div class="ico">📄</div><h3>Content Fragment Creation</h3><p>Creates CFs via the AEM Assets HTTP API, discovering real models from <code>/conf/{site}/settings/dam/cfm/models</code>.</p><span class="tag">6.5 + AEMaaCS</span></div>
+    <div class="card"><div class="ico">✍️</div><h3>Ghostwriter (AI SEO)</h3><p>Reads the live DOM, suggests SEO title + meta description, and writes to <code>jcr:content</code> — rule-based fallback without Nano.</p><span class="tag">Gemini Nano optional</span></div>
+    <div class="card"><div class="ico">▶️</div><h3>Page Actions</h3><p>Publish (<code>/bin/replicate.json</code>), Unlock (<code>cq:locked</code> removal), and Permissions Debug with ACL inheritance trace.</p><span class="tag">CSRF-tokened</span></div>
+    <div class="card"><div class="ico">🧪</div><h3>Test Generator</h3><p>Scans the live DOM for <code>data-sling-resource-type</code> components and emits a ready-to-run Playwright test.</p><span class="tag">from live DOM</span></div>
+    <div class="card"><div class="ico">♿</div><h3>Accessibility Audit</h3><p>Parses the live DOM for ADA/SEO issues and scores them in the panel header; generates a remediation plan when AI is available.</p><span class="tag">ADA + SEO</span></div>
+    <div class="card"><div class="ico">💥</div><h3>MSM Blast Radius</h3><p>Shows how many Live Copy pages a blueprint change affects, with a low / medium / high severity badge.</p><span class="tag">severity badge</span></div>
+    <div class="card"><div class="ico">🕸️</div><h3>WebMCP Registration</h3><p>Registers read-only <code>execute_aem_api</code> and <code>get_page_dom</code> tools so SLICC and WebMCP assistants can inspect AEM safely.</p><span class="tag">read-only default</span></div>
+    <div class="card"><div class="ico">💬</div><h3>AI Chat</h3><p>Ask for a content fragment, an audit, or a fix list. Falls back gracefully to tools-only mode when Gemini Nano isn't present.</p><span class="tag">honest fallback</span></div>
+  </div>
+</section>
+
+<section class="sec" id="screens">
+  <h2>In the side panel</h2>
+  <p class="lede">Real extension UI captured headlessly — sample data was enriched only for presentation.</p>
+  <div class="shots">
+    <figure class="shot"><img src="panel-actions-live.png" alt="Governance audit panel with live health score, page context and MSM impact"><figcaption>Governance header · health score · MSM blast radius</figcaption></figure>
+    <figure class="shot"><img src="panel-logs.png" alt="Log Whisperer showing high-signal Sling log entries and AI correlation"><figcaption>Log Whisperer · filtered high-signal entries</figcaption></figure>
+    <figure class="shot"><img src="panel-diff.png" alt="JCR parity diff overlay between local and stage"><figcaption>JCR parity · local vs stage diff</figcaption></figure>
+    <figure class="shot"><img src="panel-chat-filled.png" alt="AI Agent chat tab with content fragment creation and audit conversation"><figcaption>AI Agent · CF creation + audit conversation</figcaption></figure>
+    <figure class="shot"><img src="../../aem-wknd-test.png" alt="AEM Agent running on a WKND page"><figcaption>On-page overlay · WKND author session</figcaption></figure>
+  </div>
+  <p class="note">Live AEM capture (<em>docs/screenshot.png</em>) also ships in the repo — this page embeds a synthetic, clearly-labeled clip because a live AEM instance isn't running in this environment.</p>
+</section>
+
+<section class="sec" id="security">
+  <h2>Security posture</h2>
+  <p class="lede">Audited against OWASP and Snyk guidelines before store submission.</p>
+  <div class="strip-inner" style="grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); padding: 0; margin-top: 24px;">
+    <div class="it"><h4>CSRF tokens everywhere</h4><p>Every mutating request carries a CSRF token from the AEM session.</p></div>
+    <div class="it"><h4>Host allowlist</h4><p>Stage/target URLs are validated before any credential is transmitted.</p></div>
+    <div class="it"><h4>BSRF-safe API bridge</h4><p><code>execute_aem_api</code> restricted to relative JCR paths.</p></div>
+    <div class="it"><h4>Isolated worlds &amp; CSP</h4><p>MAIN-world bridge vs ISOLATED content script; strict <code>script-src 'self'</code> CSP.</p></div>
+  </div>
+</section>
+
+<footer>
+  AEM Agent v1.0.0 · <a href="https://github.com/narendragandhi/aem-agent-extension" target="_blank" rel="noopener">GitHub</a>
+  <span class="pill"><a href="../../privacy-policy.html">Privacy Policy</a></span>
+  <span class="pill">Synthetic demo</span>
+</footer>
+</main>
+
+</body>
+</html>

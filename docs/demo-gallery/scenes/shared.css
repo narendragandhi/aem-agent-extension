@@ -1,0 +1,114 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 1280px; height: 720px; overflow: hidden; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background: #141414;
+  color: #f2f2f2;
+}
+.scene {
+  position: relative;
+  width: 1280px;
+  height: 720px;
+  padding: 72px 84px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background:
+    radial-gradient(1100px 520px at 15% -10%, rgba(213, 43, 30, 0.28), transparent 60%),
+    radial-gradient(900px 500px at 105% 110%, rgba(213, 43, 30, 0.14), transparent 55%),
+    #141414;
+}
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: #ff8a80;
+  margin-bottom: 26px;
+}
+.eyebrow .dot { width: 10px; height: 10px; border-radius: 50%; background: #d52b1e; }
+h1 {
+  font-size: 54px;
+  line-height: 1.08;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+h1 .accent { color: #d52b1e; }
+h2 {
+  font-size: 40px;
+  line-height: 1.1;
+  font-weight: 800;
+}
+.sub {
+  margin-top: 18px;
+  font-size: 20px;
+  line-height: 1.45;
+  color: #bdbdbd;
+  max-width: 640px;
+}
+.chips { margin-top: 30px; display: flex; flex-wrap: wrap; gap: 12px; }
+.chip {
+  font-size: 16px;
+  font-weight: 600;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #e0e0e0;
+}
+.chip.brand { background: #d52b1e; border-color: #d52b1e; color: #fff; }
+.panel {
+  position: absolute;
+  right: 64px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 380px;
+  height: 506px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.8);
+  overflow: hidden;
+  background: #f8f9fa;
+}
+.panel img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+.bullets { margin-top: 26px; max-width: 620px; display: flex; flex-direction: column; gap: 14px; }
+.bullet { display: flex; gap: 12px; font-size: 19px; color: #e0e0e0; line-height: 1.4; }
+.bullet .tick { color: #66bb6a; font-weight: 800; }
+.foot {
+  position: absolute;
+  left: 84px;
+  bottom: 44px;
+  font-size: 14px;
+  color: #8a8a8a;
+  letter-spacing: 0.4px;
+}
+.logo-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #d52b1e, #9e1b1e);
+  margin-bottom: 28px;
+  box-shadow: 0 12px 28px -8px rgba(213, 43, 30, 0.55);
+}
+.logo-mark svg { width: 38px; height: 38px; }
+.center-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.center-hero .eyebrow { margin-bottom: 18px; }
+.center-hero h1 { font-size: 74px; }
+.center-hero .sub { max-width: 760px; margin-top: 22px; font-size: 24px; }
+.brand-strip {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 8px;
+  background: linear-gradient(90deg, #d52b1e, #9e1b1e 60%, #5f1112);
+}

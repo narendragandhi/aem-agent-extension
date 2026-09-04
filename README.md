@@ -61,6 +61,8 @@ with host validation, CSRF handling, and user confirmation.
 
 > The extension loads on any AEM author page (`localhost:4502` or AEM as a Cloud Service). The side panel provides one-click access to Log Whisperer, Governance Audit, JCR Diff, Content Fragment creation, and Ghostwriter SEO — without leaving the browser.
 
+🎬 **[Product Walkthrough & Gallery](docs/demo-gallery/index.html)** — polished landing page with a narrated synthetic video (recreates the real side panel UI) and captured screenshots of the extension in action.
+
 ---
 
 ## Installation
